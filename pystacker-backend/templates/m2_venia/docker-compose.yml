@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  web:
+    image: aheadworks/m2-venia
+    ports:
+      - "${WEB_PORT}:10000"
+    volumes:
+      - data-files:/app
+    environment:
+      - MAGENTO_BUILDPACK_PROVIDE_SECURE_HOST=0
+      - MAGENTO_BACKEND_URL=${MAGENTO_BACKEND_URL}
+volumes:
+  data-files:
+x-stacker:
+  links:
+    web:
+      - url: http://${WEB_URL}:${WEB_PORT}
+        name: PWA Frontend
+      - url: http://${WEB_URL}:${WEB_PORT}/graphiql
+        name: GQL Playground
+  meta:
+    label: Magento 2 Venia concept theme
+    icon: fab fa-js
+    description: |
+      Magento 2 PWA theme frontend
+  vars:
+    WEB_URL:
+      type: system
+      label: Magento URL
+      source: com.source.host_name
+    MAGENTO_BACKEND_URL:
+      default: https://release-dev-rxvv2iq-zddsyhrdimyra.us-4.magentosite.cloud/
+      required: 1
+      label: M2 backend URL
+    WEB_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(13)

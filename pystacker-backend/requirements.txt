@@ -1,0 +1,11 @@
+aiofile=1.4.3
+aiohttp_session
+aiohttp
+cryptography
+trafaret
+trafaret_config
+aiocache
+aiofile
+graphql-core-next
+aiodocker
+shortuuid

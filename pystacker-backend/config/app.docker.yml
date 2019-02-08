@@ -1,0 +1,17 @@
+app:
+  listen: 127.0.0.1
+  port: 80
+  host: ${APP_HOST}
+  id: ${APP_ID}
+  min_id: ${MIN_ID}
+  max_id: ${MAX_ID}
+workers:
+  - name: com.workers.garbage_collector
+    interval: 600
+path:
+  templates_dir: '/app/templates'
+  frontend_dir: '/app/frontend'
+  data_dir: '/data'
+docker:
+  hub_username: ${DOCKERHUB_LOGIN}
+  hub_password: ${DOCKERHUB_PASSWORD}

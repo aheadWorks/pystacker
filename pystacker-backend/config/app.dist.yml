@@ -1,0 +1,15 @@
+app:
+  listen: 0.0.0.0
+  port: 8080
+  host: localhost
+  id: stacker
+workers:
+  - name: com.workers.garbage_collector
+    interval: 600
+path:
+  templates_dir: 'templates'
+  frontend_dir: '../pystacker-front/dist'
+  data_dir: 'data'
+docker:
+  hub_username: 'replace_with_dockerhub_login'
+  hub_password: 'replace_with_dockerhub_password'
