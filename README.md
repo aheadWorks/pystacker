@@ -10,7 +10,7 @@ will run pystacker at http://localhost:10080 and data directory(where stacks con
 
 ## Development mode
 
-* clone this reposotory
+* clone this repository
 * copy `pystacker-backend/config/app.dist.yml` to `pystacker-backend/config/app.yml`
 * install pystacker-backend package to your python environment(virualenv recommended): `pip install -e pystacker-backend`
 * install JS requirements: `cd pystacker-front && npm install`
