@@ -3,7 +3,9 @@ FROM python:3.7-alpine
 RUN apk add --update nodejs nodejs-npm docker
 RUN docker --version
 
-RUN pip install --upgrade pip click  gunicorn docker-compose
+RUN pip install --upgrade pip click gunicorn
+# Workaround, will not build with latest docker-compose (1.24)
+RUN pip install --upgrade docker-compose==1.23.2
 
 RUN mkdir -p /app/config
 
