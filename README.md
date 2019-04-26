@@ -3,7 +3,7 @@
 ## Running as docker container
 
 ```bash
-docker run docker run -p10080:80 -v /data:/data -v /var/run/docker.sock:/var/run/docker.sock -e APP_ID=stacker -e APP_HOST=localhost -e DOCKERHUB_LOGIN=mylogin -e DOCKERHUB_PASSWORD=mypassword -d aheadworks/pystacker:latest
+docker run -p10080:80 -v /data:/data -v /var/run/docker.sock:/var/run/docker.sock -e APP_ID=stacker -e APP_HOST=localhost -e DOCKERHUB_LOGIN=mylogin -e DOCKERHUB_PASSWORD=mypassword -d aheadworks/pystacker:latest
 ```
 
 will run pystacker at http://localhost:10080 and data directory(where stacks configs are stored) mounted at `/data` at host machine
