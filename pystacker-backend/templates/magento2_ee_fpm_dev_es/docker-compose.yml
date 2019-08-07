@@ -93,9 +93,10 @@ x-stacker:
         name: MyAdmin
   meta:
     label: Magento 2 EE (development) FPM + Elasticsearch
+    deprecated: 1
     icon: fab fa-magento
     description: |
-      Magento 2 community edition. Bundled with SSH gate to mount files, phpadmin and
+      Magento 2 enterprise edition. Bundled with SSH gate to mount files, phpadmin and
       webmail, catching all outgoing email. XDebug images available. Elasticsearch 2 and 5 inside.
   vars:
     IMAGE_TAG:

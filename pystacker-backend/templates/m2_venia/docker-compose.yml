@@ -21,6 +21,7 @@ x-stacker:
   meta:
     label: Magento 2 Venia concept theme
     icon: fab fa-js
+    deprecated: 1
     description: |
       Magento 2 PWA theme frontend
   vars:

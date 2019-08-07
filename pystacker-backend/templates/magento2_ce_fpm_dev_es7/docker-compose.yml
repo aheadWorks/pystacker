@@ -54,27 +54,19 @@ services:
       - PMA_PASSWORD=magento
     ports:
       - "${MYADMIN_PORT}:80"
-
-  elasticsearch2:
-    image: blacktop/elasticsearch:2.4
-    ports:
-      - "${ES2_PORT}:9200"
-    volumes:
-      - elasticsearch2-data:/usr/share/elasticsearch/data
-  elasticsearch5:
+  elasticsearch7:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.14
+    image: elasticsearch:7.3.0
     ports:
-      - "${ES5_PORT}:9200"
+      - "${ES7_PORT}:9200"
     volumes:
-      - elasticsearch5-data:/usr/share/elasticsearch/data
+      - elasticsearch7-data:/usr/share/elasticsearch/data
 volumes:
   data-files:
   data-db:
-  elasticsearch2-data:
-  elasticsearch5-data:
+  elasticsearch7-data:
 
 x-stacker:
   links:
@@ -92,12 +84,11 @@ x-stacker:
       - url: http://${MAGENTO_URL}:${MYADMIN_PORT}
         name: MyAdmin
   meta:
-    label: Magento 2 CE (development) FPM + Elasticsearch
+    label: Magento 2 CE (development) FPM + Elasticsearch 7
     icon: fab fa-magento
-    deprecated: 1
     description: |
       Magento 2 community edition. Bundled with SSH gate to mount files, phpadmin and
-      webmail, catching all outgoing email. XDebug images available. Elasticsearch 2 and 5 inside.
+      webmail, catching all outgoing email. XDebug images available. Elasticsearch 7 inside.
   vars:
     IMAGE_TAG:
       required: 1
@@ -143,11 +134,7 @@ x-stacker:
       type: system
       filters:
         - com.registry.portmap(70)
-    ES2_PORT:
+    ES7_PORT:
       type: system
       filters:
-        - com.registry.portmap(92)
-    ES5_PORT:
-      type: system
-      filters:
-        - com.registry.portmap(95)
+        - com.registry.portmap(97)

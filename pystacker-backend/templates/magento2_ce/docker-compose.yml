@@ -60,7 +60,7 @@ x-stacker:
   meta:
     label: Magento 2 CE
     icon: fab fa-magento
-    deprecated: 1a
+    deprecated: 1
     description: |
       Magento 2 community edition. Bundled with SSH gate to mount files and
       webmail, catching all outgoing email
