@@ -177,7 +177,7 @@
                     })
             },
             del() {
-                this.$dialog.confirm({
+                this.$buefy.dialog.confirm({
                     title: 'Deleting stack',
                     message: 'Are you sure you want to <b>delete</b> stack? This action cannot be undone.',
                     confirmText: 'Delete stack',

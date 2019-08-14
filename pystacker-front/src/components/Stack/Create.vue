@@ -69,7 +69,7 @@
       createAndLeave() {
         this.$store.dispatch('stacks/createStack', {id: this.id, vars: this.collectVars(), name: this.name})
           .then((r) => this.$router.push("/stack/" + r['id']))
-          .catch(r => this.$toast.open({
+          .catch(r => this.$buefy.toast.open({
             duration: 5000,
             message: `Error creating stack: ${r}`,
             position: 'is-top',
