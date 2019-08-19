@@ -1,0 +1,119 @@
+version: '3.7'
+services:
+  web:
+    image: aheadworks/wpdev:${IMAGE_TAG}
+    ports:
+      - "${WEB_PORT}:80"
+      - "${SSH_PORT}:22"
+    volumes:
+      - data-files:/var/www/html
+    environment:
+      - MAIL_HOST=mail
+      - WP_URL=http://${WP_URL}:${WEB_PORT}
+      - WP_ADMIN_EMAIL=admin@example.com
+      - WP_ADMIN_USERNAME=${WP_ADMIN_USERNAME:-admin}
+      - WP_ADMIN_PASSWORD=${WP_ADMIN_PASSWORD:-admin}
+      - MYSQL_HOST=db
+      - MYSQL_ROOT_PASSWORD=myrootpassword
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_PREFIX=${MYSQL_PREFIX}
+      - AUTO_SETUP=1
+      - COMPOSER_AUTH=${COMPOSER_AUTH}
+      - SSH_PASSWORD=${SSH_PASSWORD}
+  db:
+    image: mysql:5.6.42
+    volumes:
+      - data-db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=myrootpassword
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+      - MYSQL_DATABASE=wordpress
+  mail:
+    image: mailhog/mailhog
+    user: root
+    command: ["-smtp-bind-addr", "0.0.0.0:25", "-ui-bind-addr", "0.0.0.0:80", "-api-bind-addr", "0.0.0.0:80"]
+    ports:
+      - "${MAIL_PORT}:80"
+  myadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - MYSQL_ROOT_PASSWORD=myrootpassword
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+      - MYSQL_DATABASE=wordpress
+      - PMA_USER=wordpress
+      - PMA_PASSWORD=wordpress
+    ports:
+      - "${MYADMIN_PORT}:80"
+volumes:
+  data-files:
+  data-db:
+x-stacker:
+  links:
+    web:
+      - url: http://${WP_URL}:${WEB_PORT}
+        name: Frontend
+      - url: http://${WP_URL}:${WEB_PORT}/wp-admin/
+        name: Backend
+      - url: ssh://root@${WP_URL}:${SSH_PORT}
+        name: SSH
+    mail:
+      - url: http://${WP_URL}:${MAIL_PORT}
+        name: Web mail
+    myadmin:
+      - url: http://${WP_URL}:${MYADMIN_PORT}
+        name: MyAdmin
+  meta:
+    label: Wordpress FPM
+    icon: fab fa-wordpress
+    description: |
+      Wordpress. Bundled with SSH gate to mount files, phpadmin and
+      webmail, catching all outgoing email.
+  vars:
+    IMAGE_TAG:
+      required: 1
+      label: Wordpress version
+      source: com.source.dockerhub.tags_for_repo(aheadworks, wpdev)
+      type: select
+    WP_URL:
+      type: system
+      label: Wordpress URL
+      source: com.source.host_name
+    WP_ADMIN_USERNAME:
+      default: master
+      required: 1
+      label: Admin username
+    WP_ADMIN_PASSWORD:
+      default: master123
+      required: 1
+      label: Admin password
+    MYSQL_PREFIX:
+      label: DB tables prefix
+    SSH_PASSWORD:
+      default: root
+      required: 1
+      label: SSH password(root)
+    COMPOSER_AUTH:
+      type: textarea
+      label: Composer's auth.json
+      filters:
+        - com.json.compact
+    WEB_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(80)
+    SSH_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(22)
+    MAIL_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(88)
+    MYADMIN_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(70)

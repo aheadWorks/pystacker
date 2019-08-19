@@ -1,9 +1,9 @@
-aiofile=1.4.3
+aiofile
 aiohttp_session
 aiohttp
 cryptography
 trafaret
-trafaret_config
+trafaret-config
 aiocache
 aiofile
 graphql-core-next
