@@ -1,0 +1,69 @@
+version: '3.7'
+services:
+  web:
+    image: aheadworks/phpdev:${IMAGE_TAG}
+    ports:
+      - "${WEB_PORT}:80"
+      - "${SSH_PORT}:22"
+    volumes:
+      - data-files:/var/www/html
+    environment:
+      - MAIL_HOST=mail
+      - COMPOSER_AUTH=${COMPOSER_AUTH}
+      - SSH_PASSWORD=${SSH_PASSWORD}
+  mail:
+    image: mailhog/mailhog
+    user: root
+    command: ["-smtp-bind-addr", "0.0.0.0:25", "-ui-bind-addr", "0.0.0.0:80", "-api-bind-addr", "0.0.0.0:80"]
+    ports:
+      - "${MAIL_PORT}:80"
+volumes:
+  data-files:
+  data-db:
+x-stacker:
+  links:
+    web:
+      - url: http://${URL}:${WEB_PORT}
+        name: Web
+      - url: ssh://root@${URL}:${SSH_PORT}
+        name: SSH
+    mail:
+      - url: http://${URL}:${MAIL_PORT}
+        name: Web mail
+  meta:
+    label: PHP FPM
+    icon: fab fa-php
+    description: |
+      PHP. Bundled with SSH gate to mount files, phpadmin and
+      webmail, catching all outgoing email.
+  vars:
+    IMAGE_TAG:
+      required: 1
+      label: PHP version
+      source: com.source.dockerhub.tags_for_repo(aheadworks, phpdev)
+      type: select
+    URL:
+      type: system
+      label: URL
+      source: com.source.host_name
+    SSH_PASSWORD:
+      default: root
+      required: 1
+      label: SSH password(root)
+    COMPOSER_AUTH:
+      type: textarea
+      label: Composer's auth.json
+      filters:
+        - com.json.compact
+    WEB_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(80)
+    SSH_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(22)
+    MAIL_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(88)

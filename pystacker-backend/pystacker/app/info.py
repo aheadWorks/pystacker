@@ -104,7 +104,7 @@ class StackerNodeInfo:
 
     async def load(self):
         try:
-            st = yaml.load(await self._res.read())
+            st = yaml.load(await self._res.read(), Loader=yaml.FullLoader)
             return st[self._key]
         except KeyError:
             return {}
