@@ -18,12 +18,11 @@ class Registry():
         self._lock = asyncio.Lock()
         self._executor = Executor()
 
-        self._max_id = max_id
-        self._min_id = min_id
+        self._max_id = int(max_id)
+        self._min_id = int(min_id)
         self.prefix = prefix
 
         self._statuses = {}
-
 
 
     def reserve_id(self, ids):
@@ -58,7 +57,6 @@ class Registry():
         async with self.bind_id() as sid:
             if not name or not len(name.strip()):
                 name = "stack_%s" % sid
-
             compose_yml = await tpl.convert_to_yml(ctx={
                 'id': sid,
                 'uid': shortuuid.ShortUUID(alphabet="qwertyuiopasdfghjklzxcvbnm").random(length=8),
