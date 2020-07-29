@@ -95,7 +95,7 @@ x-stacker:
     IMAGE_TAG:
       required: 1
       label: Magento version
-      source: com.source.dockerhub.tags_for_repo(aheadworks, m2dev-ce)
+      source: com.source.dockerhub.tags_for_repo(aheadworks, m24dev-ce)
       type: select
     MAGENTO_URL:
       type: system
