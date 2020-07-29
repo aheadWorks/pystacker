@@ -1,0 +1,142 @@
+version: '3.7'
+services:
+  web:
+    image: aheadworks/m2dev-ce:${IMAGE_TAG}
+    ports:
+      - "${WEB_PORT}:80"
+      - "${SSH_PORT}:22"
+    volumes:
+      - data-files:/var/www/html
+      - ${HOME}/.ssh:/.ssh/:ro
+    environment:
+      - MAIL_HOST=mail
+      - MAGENTO_URL=http://${MAGENTO_URL}:${WEB_PORT}
+      - MAGENTO_TIMEZONE=Pacific/Auckland
+      - MAGENTO_DEFAULT_CURRENCY=USD
+      - MAGENTO_ADMIN_FIRSTNAME=Admin
+      - MAGENTO_ADMIN_LASTNAME=MyStore
+      - MAGENTO_ADMIN_EMAIL=amdin@example.com
+      - MAGENTO_ADMIN_USERNAME=${MAGENTO_ADMIN_USERNAME:-master}
+      - MAGENTO_ADMIN_PASSWORD=${MAGENTO_ADMIN_PASSWORD:-master123}
+      - MAGENTO_ROOT=/var/www/html
+      - MAGENTO_LANGUAGE=en_GB
+      - MYSQL_HOST=db
+      - MYSQL_ROOT_PASSWORD=myrootpassword
+      - MYSQL_USER=magento
+      - MYSQL_PASSWORD=magento
+      - MYSQL_DATABASE=magento
+      - MYSQL_PREFIX=${MYSQL_PREFIX}
+      - AUTO_SETUP=1
+      - COMPOSER_AUTH=${COMPOSER_AUTH}
+      - SSH_PASSWORD=${SSH_PASSWORD}
+  db:
+    image: mysql:8.0
+    volumes:
+      - data-db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=myrootpassword
+      - MYSQL_USER=magento
+      - MYSQL_PASSWORD=magento
+      - MYSQL_DATABASE=magento
+    command: mysqld --default-authentication-plugin=mysql_native_password --skip-mysqlx
+  mail:
+    image: mailhog/mailhog
+    user: root
+    command: ["-smtp-bind-addr", "0.0.0.0:25", "-ui-bind-addr", "0.0.0.0:80", "-api-bind-addr", "0.0.0.0:80"]
+    ports:
+      - "${MAIL_PORT}:80"
+  myadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - MYSQL_ROOT_PASSWORD=myrootpassword
+      - MYSQL_USER=magento
+      - MYSQL_PASSWORD=magento
+      - MYSQL_DATABASE=magento
+      - PMA_USER=magento
+      - PMA_PASSWORD=magento
+    ports:
+      - "${MYADMIN_PORT}:80"
+  elasticsearch7:
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    image: elasticsearch:7.3.0
+    ports:
+      - "${ES7_PORT}:9200"
+    volumes:
+      - elasticsearch7-data:/usr/share/elasticsearch/data
+volumes:
+  data-files:
+  data-db:
+  elasticsearch7-data:
+
+x-stacker:
+  links:
+    web:
+      - url: http://${MAGENTO_URL}:${WEB_PORT}
+        name: Frontend
+      - url: http://${MAGENTO_URL}:${WEB_PORT}/admin
+        name: Backend
+      - url: ssh://root@${MAGENTO_URL}:${SSH_PORT}
+        name: SSH
+    mail:
+      - url: http://${MAGENTO_URL}:${MAIL_PORT}
+        name: Web mail
+    myadmin:
+      - url: http://${MAGENTO_URL}:${MYADMIN_PORT}
+        name: MyAdmin
+  meta:
+    label: Magento 2.4 CE (development) FPM + Elasticsearch 7
+    icon: fab fa-magento
+    description: |
+      Magento 2 community edition. Bundled with SSH gate to mount files, phpadmin and
+      webmail, catching all outgoing email. XDebug images available. Elasticsearch 7 inside.
+  vars:
+    IMAGE_TAG:
+      required: 1
+      label: Magento version
+      source: com.source.dockerhub.tags_for_repo(aheadworks, m2dev-ce)
+      type: select
+    MAGENTO_URL:
+      type: system
+      label: Magento URL
+      source: com.source.host_name
+    MAGENTO_ADMIN_USERNAME:
+      default: master
+      required: 1
+      label: Magento admin username
+    MAGENTO_ADMIN_PASSWORD:
+      default: master123
+      required: 1
+      label: Magento admin password
+    MYSQL_PREFIX:
+      label: DB tables prefix
+    SSH_PASSWORD:
+      default: root
+      required: 1
+      label: SSH password(root)
+    COMPOSER_AUTH:
+      type: textarea
+      label: Composer's auth.json
+      filters:
+        - com.json.compact
+    WEB_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(80)
+    SSH_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(22)
+    MAIL_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(88)
+    MYADMIN_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(70)
+    ES7_PORT:
+      type: system
+      filters:
+        - com.registry.portmap(97)
