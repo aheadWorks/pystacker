@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   web:
-    image: aheadworks/m2dev-ee:${IMAGE_TAG}
+    image: aheadworks/m24dev-ee:${IMAGE_TAG}
     ports:
       - "${WEB_PORT}:80"
       - "${SSH_PORT}:22"
